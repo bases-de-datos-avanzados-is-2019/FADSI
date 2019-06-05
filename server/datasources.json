@@ -1,0 +1,13 @@
+{
+  "db": {
+    "host": "cluster0-cwvgg.mongodb.net",
+    "port": 27017,
+    "url": "mongodb+srv://admin:admin123@cluster0-cwvgg.mongodb.net/fadsiDB?retryWrites=true&w=majority",
+    "database": "fadsiDB",
+    "password": "admin123",
+    "name": "db",
+    "user": "admin",
+    "useNewUrlParser": true,
+    "connector": "mongodb"
+  }
+}
