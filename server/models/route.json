@@ -1,0 +1,29 @@
+{
+  "name": "route",
+  "plural": "routes",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "idCliente": {
+      "type": "string",
+      "required": true
+    },
+    "idMainSite": {
+      "type": "string",
+      "required": true
+    },
+    "possibleSites": {
+      "type": [
+        "object"
+      ],
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

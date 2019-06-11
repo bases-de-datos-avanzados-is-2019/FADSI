@@ -1,0 +1,42 @@
+{
+  "name": "order",
+  "plural": "orders",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "idCliente": {
+      "type": "string",
+      "required": true
+    },
+    "items": {
+      "type": [
+        "object"
+      ],
+      "required": true
+    },
+    "date": {
+      "type": "date",
+      "required": true,
+      "defaultFn": "now"
+    },
+    "status": {
+      "type": "string",
+      "required": true,
+      "default": "Registrado"
+    },
+    "extraDetail": {
+      "type": "string"
+    },
+    "totalSum": {
+      "type": "number",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

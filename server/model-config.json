@@ -34,5 +34,17 @@
   "Role": {
     "dataSource": "db",
     "public": false
+  },
+  "site": {
+    "dataSource": "db",
+    "public": true
+  },
+  "order": {
+    "dataSource": "db",
+    "public": true
+  },
+  "route": {
+    "dataSource": "db",
+    "public": true
   }
 }

@@ -1,0 +1,67 @@
+{
+  "name": "site",
+  "plural": "sites",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "latitude": {
+      "type": "number",
+      "required": true
+    },
+    "longitude": {
+      "type": "number",
+      "required": true
+    },
+    "location": {
+      "type": "geopoint"
+    },
+    "address": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "string"
+    },
+    "deliveryPersonnelQuantity": {
+      "type": "number",
+      "required": true,
+      "default": 0
+    },
+    "type": {
+      "type": "string"
+    },
+    "image": {
+      "type": "string"
+    },
+    "telephoneNumber": {
+      "type": "string"
+    },
+    "rating": {
+      "type": "number"
+    },
+    "openingHours": {
+      "type": [
+        "string"
+      ]
+    },
+    "website": {
+      "type": "string"
+    },
+    "products": {
+      "type": [
+        "object"
+      ],
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}
