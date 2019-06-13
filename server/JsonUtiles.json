@@ -7,5 +7,6 @@
   "email":"edochacon96@gmail.com",
   "fechaNacimiento":"25-05-1996",
   "username": "AllanCh",
-  "password":"pass01"
+  "password":"pass01",
+  "tipoUsuario": "client/employee"
 }
