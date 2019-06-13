@@ -26,9 +26,9 @@
       "required": true
     },
     "description": {
-      "type": [
+      "type":
         "string"
-      ]
+
     },
     "deliveryPersonnelQuantity": {
       "type": "number",
@@ -36,7 +36,9 @@
       "default": 0
     },
     "type": {
-      "type": "string"
+      "type": [
+        "string"
+      ]
     },
     "image": {
       "type": "string"
