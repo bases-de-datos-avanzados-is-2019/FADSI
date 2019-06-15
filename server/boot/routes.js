@@ -2,61 +2,64 @@ const neo4j = require('neo4j-driver').v1;
 
 module.exports = function(app) {
     var router = app.loopback.Router();
-    router.get('/neo/etl', async function(req, res) {
+    // router.get('/neo/etl', async function(req, res) {
 
-        const driver = neo4j.driver("bolt://35.243.138.141:7687", neo4j.auth.basic("neo4j", "2016122270"));
-        const session = driver.session();
+    //     const driver = neo4j.driver("bolt://35.243.138.141:7687", neo4j.auth.basic("neo4j", "2016122270"));
+    //     const session = driver.session();
 
-        const resultPromise = session.run(
-            "MATCH (n) DETACH DELETE n");             
+    //     const resultPromise = session.run(
+    //         "MATCH (n) DETACH DELETE n");             
 
-        var User = app.models.User;
-        var users = await User.find({where: {userType: 'client'}});
+    //     var User = app.models.User;
+    //     var users = await User.find({where: {userType: 'client'}});
 
-        const lengthUser = users.length;
-        for (var i = 0; i < lengthUser; i++){
-            const resultPromise = session.run(
-                "CREATE (n:Client {userName: {username}, userID: {idNumber}}) RETURN n", {username: users[i].username, idNumber: users[i].id.toString()});              
-        }
+    //     const lengthUser = users.length;
+    //     console.log(lengthUser);
+    //     for (var i = 0; i < lengthUser; i++){
+    //         const resultPromise = session.run(
+    //             "CREATE (n:Client {userName: {username}, userID: {idNumber}}) RETURN n", {username: users[i].username, idNumber: users[i].id.toString()});              
+    //     }
 
-        var Site = app.models.site;
-        var sites = await Site.find();
+    //     var Site = app.models.site;
+    //     var sites = await Site.find();
         
-        const lengthSite = sites.length;
-        for (var i = 0; i < lengthSite; i++){
-            const resultPromise = session.run(
-                "CREATE (n:Site {name: {name}, siteID: {idSite}}) RETURN n", {name: sites[i].name, idSite: sites[i].id.toString()});      
+    //     const lengthSite = sites.length;
+    //     console.log(lengthSite);
+    //     for (var i = 0; i < lengthSite; i++){
+    //         const resultPromise = session.run(
+    //             "CREATE (n:Site {name: {name}, siteID: {idSite}}) RETURN n", {name: sites[i].name, idSite: sites[i].id.toString()});      
             
-            var products = sites[i].products;
-            const lengthProd = products.length;
-            for(var j = 0; j < lengthProd; j++) {
-                const resultPromise = session.run(
-                    "MATCH (a:Site {name: {siteName}}) CREATE (n:Product {name: {name}, description: {description}}) CREATE(a)-[s:SELLS {Cost: {price}}]->(n) RETURN s", {siteName: sites[i].name, name: products[j].name, description: products[j].description, price: products[j].price});
-            }
-        }
+    //         var products = sites[i].products;
+    //         const lengthProd = products.length;
+    //         for(var j = 0; j < lengthProd; j++) {
+    //             const resultPromise = session.run(
+    //                 "MATCH (a:Site {name: {siteName}}) CREATE (n:Product {name: {name}, description: {description}}) CREATE(a)-[s:SELLS {Cost: {price}}]->(n) RETURN s", {siteName: sites[i].name, name: products[j].name, description: products[j].description, price: products[j].price});
+    //         }
+    //     }
 
-        var Order = app.models.order;
-        var orders = await Order.find();
+    //     var Order = app.models.order;
+    //     var orders = await Order.find();
 
-        const lengthOrder = orders.length;
-        for (var i = 0; i < lengthOrder; i++){
-            console.log(orders[i].idCliente);
-            console.log(typeof orders[i].idCliente);
-            const resultPromise = session.run(
-                "MATCH (a:Client {userID: {idcliente}}) CREATE (n:Order {orderID: {orderID}, totalSum: {totalSum}}) CREATE(a)-[s:BUYS]->(n) RETURN s", {idcliente: orders[i].idCliente, orderID: orders[i].id.toString(), totalSum: orders[i].totalSum});   
+    //     const lengthOrder = orders.length;
+    //     console.log(lengthOrder);
+    //     for (var i = 0; i < lengthOrder; i++){
+    //         console.log(orders[i].idCliente);
+    //         console.log(typeof orders[i].idCliente);
+    //         const resultPromise = session.run(
+    //             "MATCH (a:Client {userID: {idcliente}}) CREATE (n:Order {orderID: {orderID}, totalSum: {totalSum}}) CREATE(a)-[s:BUYS]->(n) RETURN s", {idcliente: orders[i].idCliente, orderID: orders[i].id.toString(), totalSum: orders[i].totalSum});   
             
-            var orderSites = orders[i].idSitios;
-            const lengthSit = orderSites.length;
-            for(var j = 0; j < lengthSit; j++) {
-                const resultPromise = session.run(
-                    "MATCH (a:Order {orderID: {orderID}}),(b:Site {siteID: {siteID}}) CREATE(a)-[ab:REQUESTED]->(b) RETURN ab", {orderID: orders[i].id.toString(), siteID: orderSites[j]});
-            }          
-        }
+    //         var orderSites = orders[i].idSitios;
+    //         const lengthSit = orderSites.length;
+    //         for(var j = 0; j < lengthSit; j++) {
+    //             const resultPromise = session.run(
+    //                 "MATCH (a:Order {orderID: {orderID}}),(b:Site {siteID: {siteID}}) CREATE(a)-[ab:REQUESTED]->(b) RETURN ab", {orderID: orders[i].id.toString(), siteID: orderSites[j]});
+    //         }          
+    //     }
         
-        session.close();
-        driver.close();
-        res.send({response: 'Successful ETL'});
-    });
+    //     session.close();
+    //     driver.close();
+    //     res.send({response: 'Successful ETL'});
+    // });
 
     router.get('/neo/order/:id', async function(req, res) {
 
@@ -164,6 +167,58 @@ module.exports = function(app) {
             console.log(error);
           }
         });
+    });
+
+    router.get('/neo/path/client/:clientID/site/:siteID', async function(req, res) {
+
+        const driver = neo4j.driver("bolt://35.243.138.141:7687", neo4j.auth.basic("neo4j", "2016122270"));
+        const session = driver.session();
+
+        const clientID = req.params.clientID;
+        const siteID = req.params.siteID;
+        const collectedPath = [];
+
+        console.log(clientID);
+        console.log(siteID);
+        var Route = app.models.route;
+        var routes = await Route.find({where: {idCliente: {like: clientID}, idMainSite: {like: siteID}}});
+
+        const resultPromise = session.run(
+            // "MATCH (a:Client {userID: {clienteId}}) CREATE (n:MainNode {nodeID: {mainID}}) CREATE(a)-[s:PATH_START]->(n) RETURN s", {clientId: clientID, mainID: siteID});   
+            "CREATE (n:MainNode {nodeID: {mainID}}) RETURN n", {clientId: clientID, mainID: siteID});   
+        
+        // var subNodes = routes[0].possibleSites;
+        // console.log(routes);
+        // const subLength = subNodes.length;
+        // const resultPromise = session.run(
+        //     "MATCH (a:MainNode {nodeID: {mainID}}) CREATE (n:SubNode {nodeID: {subID}}) CREATE(a)-[s:PATH_GO {distance: {distance}}]->(n) RETURN s", {mainID: siteID, subID: subNodes[0].idSubSite, distance: subNodes[0].distance}); 
+        // for(var j = 1; j < subLength; j++) {
+        //     const resultPromise = session.run(
+        //         "MATCH (a:SubNode {nodeID: {mainID}}) CREATE (n:SubNode {nodeID: {subID}}) CREATE(a)-[s:PATH_GO {distance: {distance}}]->(n) RETURN s", {mainID: subNodes[j-1].idSubSite, subID: subNodes[j].idSubSite, distance: Math.abs(Number(subNodes[j-1].distance) - Number(subNodes[j-1].distance))}); 
+        // }  
+        
+        res.send({result: 'lol'});
+
+
+        // const result = session.run('MATCH (a:Client {userID: {userID}})-[:BUYS]->(oa)-[:REQUESTED]->(s)<-[:REQUESTED]-(ob)<-[:BUYS]-(b:Client) RETURN DISTINCT b, size((a)-[:BUYS]->()-[:REQUESTED]->()<-[:REQUESTED]-()<-[:BUYS]-(b)) AS count ORDER BY count DESC', { userID: id});
+
+        // result.subscribe({
+        //   onNext: record => {
+        //     const client = record.get(0);
+        //     const count = record.get(1);
+        //     var clientCount = {userName: client.properties.userName, userID: client.properties.userID, totalMatches: count.low};
+        //     collectedClients.push(clientCount);
+        //   },
+        //   onCompleted: () => {
+        //     session.close();
+
+        //     driver.close();
+        //     res.send({result: collectedClients});
+        //   },
+        //   onError: error => {
+        //     console.log(error);
+        //   }
+        // });
     });
 
     app.use(router);
