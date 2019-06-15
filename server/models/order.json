@@ -11,6 +11,12 @@
       "type": "string",
       "required": true
     },
+    "idSitios": {
+      "type": [
+        "string"
+      ],
+      "required": true
+    },
     "items": {
       "type": [
         "object"
@@ -19,6 +25,7 @@
     },
     "date": {
       "type": "date",
+      "dataType": "timestamp",
       "required": true,
       "defaultFn": "now"
     },
