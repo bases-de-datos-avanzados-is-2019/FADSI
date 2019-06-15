@@ -2,7 +2,7 @@ const neo4j = require('neo4j-driver').v1;
 
 module.exports = function(app) {
     var router = app.loopback.Router();
-    router.get('/ping', async function(req, res) {
+    router.get('/neo/etl', async function(req, res) {
 
         const driver = neo4j.driver("bolt://35.243.138.141:7687", neo4j.auth.basic("neo4j", "2016122270"));
         const session = driver.session();
@@ -103,6 +103,62 @@ module.exports = function(app) {
 
             driver.close();
             res.send({result: collectedNOrders});
+          },
+          onError: error => {
+            console.log(error);
+          }
+        });
+    });
+
+    router.get('/neo/topSites', async function(req, res) {
+
+        const driver = neo4j.driver("bolt://35.243.138.141:7687", neo4j.auth.basic("neo4j", "2016122270"));
+        const session = driver.session();
+
+        const result = session.run('MATCH (n:Site) RETURN n, size((n)<-[:REQUESTED]-()) AS count ORDER BY count DESC LIMIT 5');
+        const collectedSites = [];
+        
+        result.subscribe({
+          onNext: record => {
+            const site = record.get(0);
+            const count = record.get(1);
+            var siteCount = {name: site.properties.name, siteID: site.properties.siteID, totalOrders: count.low};
+            collectedSites.push(siteCount);
+          },
+          onCompleted: () => {
+            session.close();
+
+            driver.close();
+            console.log(collectedSites);
+            res.send({result: collectedSites});
+          },
+          onError: error => {
+            console.log(error);
+          }
+        });
+    });
+
+    router.get('/neo/order/client/:id', async function(req, res) {
+
+        const driver = neo4j.driver("bolt://35.243.138.141:7687", neo4j.auth.basic("neo4j", "2016122270"));
+        const session = driver.session();
+
+        const id = req.params.id;
+        const result = session.run('MATCH (a:Client {userID: {userID}})-[:BUYS]->(oa)-[:REQUESTED]->(s)<-[:REQUESTED]-(ob)<-[:BUYS]-(b:Client) RETURN DISTINCT b, size((a)-[:BUYS]->()-[:REQUESTED]->()<-[:REQUESTED]-()<-[:BUYS]-(b)) AS count ORDER BY count DESC', { userID: id});
+        const collectedClients = [];
+        
+        result.subscribe({
+          onNext: record => {
+            const client = record.get(0);
+            const count = record.get(1);
+            var clientCount = {userName: client.properties.userName, userID: client.properties.userID, totalMatches: count.low};
+            collectedClients.push(clientCount);
+          },
+          onCompleted: () => {
+            session.close();
+
+            driver.close();
+            res.send({result: collectedClients});
           },
           onError: error => {
             console.log(error);
