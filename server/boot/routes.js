@@ -174,54 +174,23 @@ module.exports = function(app) {
     });
 
     router.get('/neo/path/client/:clientID/site/:siteID', async function(req, res) {
-
-        const driver = neo4j.driver("bolt://35.243.138.141:7687", neo4j.auth.basic("neo4j", "2016122270"));
-        const session = driver.session();
-
+        var Route = app.models.route;
         const clientID = req.params.clientID;
         const siteID = req.params.siteID;
-        const collectedPath = [];
-
-        var Route = app.models.route;
         var routes = await Route.find({where: {idCliente: {like: clientID}, idMainSite: {like: siteID}}});
+        var result = {};
 
-        const resultPromise = session.run(
-            // "MATCH (a:Client {userID: {clienteId}}) CREATE (n:MainNode {nodeID: {mainID}}) CREATE(a)-[s:PATH_START]->(n) RETURN s", {clientId: clientID, mainID: siteID});   
-            "CREATE (n:MainNode {nodeID: {mainID}}) RETURN n", {clientId: clientID, mainID: siteID});   
-        
-        // var subNodes = routes[0].possibleSites;
-        // console.log(routes);
-        // const subLength = subNodes.length;
-        // const resultPromise = session.run(
-        //     "MATCH (a:MainNode {nodeID: {mainID}}) CREATE (n:SubNode {nodeID: {subID}}) CREATE(a)-[s:PATH_GO {distance: {distance}}]->(n) RETURN s", {mainID: siteID, subID: subNodes[0].idSubSite, distance: subNodes[0].distance}); 
-        // for(var j = 1; j < subLength; j++) {
-        //     const resultPromise = session.run(
-        //         "MATCH (a:SubNode {nodeID: {mainID}}) CREATE (n:SubNode {nodeID: {subID}}) CREATE(a)-[s:PATH_GO {distance: {distance}}]->(n) RETURN s", {mainID: subNodes[j-1].idSubSite, subID: subNodes[j].idSubSite, distance: Math.abs(Number(subNodes[j-1].distance) - Number(subNodes[j-1].distance))}); 
-        // }  
-        session.close();
-        driver.close();
-        res.send({result: 'lol'});
-
-
-        // const result = session.run('MATCH (a:Client {userID: {userID}})-[:BUYS]->(oa)-[:REQUESTED]->(s)<-[:REQUESTED]-(ob)<-[:BUYS]-(b:Client) RETURN DISTINCT b, size((a)-[:BUYS]->()-[:REQUESTED]->()<-[:REQUESTED]-()<-[:BUYS]-(b)) AS count ORDER BY count DESC', { userID: id});
-
-        // result.subscribe({
-        //   onNext: record => {
-        //     const client = record.get(0);
-        //     const count = record.get(1);
-        //     var clientCount = {userName: client.properties.userName, userID: client.properties.userID, totalMatches: count.low};
-        //     collectedClients.push(clientCount);
-        //   },
-        //   onCompleted: () => {
-        //     session.close();
-
-        //     driver.close();
-        //     res.send({result: collectedClients});
-        //   },
-        //   onError: error => {
-        //     console.log(error);
-        //   }
-        // });
+        var collectedSegments = [];
+        var subNodes = routes[0].possibleSites;
+        const subLength = subNodes.length;
+        var segment = {start: siteID, end: subNodes[0].idSubSite, cost: Math.abs(Number(subNodes[0].distance) - Number(subNodes[subLength-1].distance))};
+        collectedSegments.push(segment);
+        for(var j = 1; j < subLength; j++) {
+          var segment = {start: subNodes[j-1].idSubSite, end: subNodes[j].idSubSite, cost: Math.abs(Number(subNodes[j-1].distance) - Number(subNodes[j].distance))};
+          collectedSegments.push(segment);
+        }
+        result = {path: collectedSegments};
+        res.send(result);
     });
 
     app.use(router);
