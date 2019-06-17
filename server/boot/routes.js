@@ -174,7 +174,7 @@ module.exports = function(app) {
         });
     });
 
-    router.post('/:id', async function(req,res) {
+    router.post('/correo/:id', async function(req,res) {
       const oEmail = new Email({
           service: "gmail",
           auth: {
