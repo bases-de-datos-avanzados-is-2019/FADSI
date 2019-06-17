@@ -189,10 +189,10 @@ module.exports = function(app) {
       const email = {
           from: "equipolibrarytec@gmail.com",
           to: user.email,
-          subject: "Confirmación de envio",
+          subject: "Confirmación de ruta",
           html: `
               <div>
-              <p>Se le informa que su pedido ha sido enviado y llegará a usted muy pronto<p>
+              <p>Se le informa que su ruta de interés se ha calculado exitosamente<p>
               <div>
           `
       };
