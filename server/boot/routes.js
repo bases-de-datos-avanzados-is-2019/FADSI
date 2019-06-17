@@ -1,4 +1,5 @@
 const neo4j = require('neo4j-driver').v1;
+const Email = require('../email');
 
 module.exports = function(app) {
     var router = app.loopback.Router();
@@ -173,25 +174,52 @@ module.exports = function(app) {
         });
     });
 
-    router.get('/neo/path/client/:clientID/site/:siteID', async function(req, res) {
-        var Route = app.models.route;
-        const clientID = req.params.clientID;
-        const siteID = req.params.siteID;
-        var routes = await Route.find({where: {idCliente: {like: clientID}, idMainSite: {like: siteID}}});
-        var result = {};
+    router.post('/:id', async function(req,res) {
+      const oEmail = new Email({
+          service: "gmail",
+          auth: {
+              user: "equipolibrarytec@gmail.com",
+              pass: "l1br4r1t3c"
+          }
+      });  
+      const clientID = (req.params.id);
+      var User = app.models.User;
+      var user = await User.findById(clientID);
+      console.log(user);
+      const email = {
+          from: "equipolibrarytec@gmail.com",
+          to: user.email,
+          subject: "Confirmación de envio",
+          html: `
+              <div>
+              <p>Se le informa que su pedido ha sido enviado y llegará a usted muy pronto<p>
+              <div>
+          `
+      };
+      oEmail.sendEmail(email);
+      res.json({mensaje: "Correo enviado"});
+  
+  });
 
-        var collectedSegments = [];
-        var subNodes = routes[0].possibleSites;
-        const subLength = subNodes.length;
-        var segment = {start: siteID, end: subNodes[0].idSubSite, cost: Math.abs(Number(subNodes[0].distance) - Number(subNodes[subLength-1].distance))};
-        collectedSegments.push(segment);
-        for(var j = 1; j < subLength; j++) {
-          var segment = {start: subNodes[j-1].idSubSite, end: subNodes[j].idSubSite, cost: Math.abs(Number(subNodes[j-1].distance) - Number(subNodes[j].distance))};
-          collectedSegments.push(segment);
-        }
-        result = {path: collectedSegments};
-        res.send(result);
-    });
+  router.get('/neo/path/client/:clientID/site/:siteID', async function(req, res) {
+    var Route = app.models.route;
+    const clientID = req.params.clientID;
+    const siteID = req.params.siteID;
+    var routes = await Route.find({where: {idCliente: {like: clientID}, idMainSite: {like: siteID}}});
+    var result = {};
+  
+    var collectedSegments = [];
+    var subNodes = routes[0].possibleSites;
+    const subLength = subNodes.length;
+    var segment = {start: siteID, end: subNodes[0].idSubSite, cost: Math.abs(Number(subNodes[0].distance) - Number(subNodes[subLength-1].distance))};
+    collectedSegments.push(segment);
+    for(var j = 1; j < subLength; j++) {
+      var segment = {start: subNodes[j-1].idSubSite, end: subNodes[j].idSubSite, cost: Math.abs(Number(subNodes[j-1].distance) - Number(subNodes[j].distance))};
+      collectedSegments.push(segment);
+    }
+    result = {path: collectedSegments};
+    res.send(result);
+  });
 
     app.use(router);
   }
