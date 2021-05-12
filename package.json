@@ -19,7 +19,7 @@
     "loopback-component-explorer": "^6.2.0",
     "loopback-connector-mongodb": "^4.2.0",
     "neo4j-driver": "^1.7.5",
-    "nodemailer": "^6.2.1",
+    "nodemailer": "^6.4.16",
     "serve-favicon": "^2.0.1",
     "strong-error-handler": "^3.0.0"
   },
